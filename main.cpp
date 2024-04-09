@@ -3,6 +3,9 @@
 #define GL_SILENCE_DEPRECATION
 #include <GLFW/glfw3.h>
 
+#include<cmath>
+#define PI 3.1415926535
+
 
 int  mapX = 8, mapY = 8, mapS = 64;
 
@@ -19,7 +22,7 @@ int map[]=           //the map array.
 };
 
 
-float px, py; //player position
+float px, py, pdx,pdy,pa; //player position
 
 void init()
 {
@@ -31,34 +34,44 @@ void init()
 
     px = 300; 
     py = 300;
-    // glBegin(GL_TRIANGLES);
-    // glVertex2f(-0.5f,-0.5f);
-    // glVertex2f(0.0f,0.5f);
-    // glVertex2f(0.5f,-0.5f);
-    // glEnd();
-
+    pdx=cos(pa)*5;
+    pdy=sin(pa)*5;
 }
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (key == GLFW_KEY_A && action == GLFW_PRESS)
     {
-        px -= 5;
+        pa-= 0.1;
+        if(pa <0)
+        {
+            pa+= 2*PI;
+        }
+        pdx = cos(pa)*5;
+        pdy = sin(pa)*5;
     }
 
     if (key == GLFW_KEY_D && action == GLFW_PRESS)
     {
-        px += 5;
+        pa+= 0.1;
+        if(pa > 2*PI)
+        {
+            pa-= 2*PI;
+        }
+        pdx = cos(pa)*5;
+        pdy = sin(pa)*5;
     }
 
     if (key == GLFW_KEY_W && action == GLFW_PRESS)
     {
-        py -= 5;
+        px += pdx;
+        py += pdy;
     }
 
     if (key == GLFW_KEY_S && action == GLFW_PRESS)
     {
-        py += 5;
+        px -= pdx;
+        py -= pdy;
     }
     
     //glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -71,6 +84,12 @@ void drawPlayer()
     glPointSize(10);
     glBegin(GL_POINTS);
     glVertex2i(px,py);
+    glEnd();
+
+    glLineWidth(3);
+    glBegin(GL_LINES);
+    glVertex2i(px,py);
+    glVertex2i(px+pdx*5, py+pdy*5);
     glEnd();
 }
 
